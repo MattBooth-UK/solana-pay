@@ -74,12 +74,12 @@ const App: FC<AppProps> & { getInitialProps(appContext: AppContext): Promise<App
                                     recipient={recipient}
                                     label={label}
                                     message={message}
+                                    connectWallet={connectWallet}
                                     splToken={MAINNET_USDC_MINT}
                                     symbol="USDC"
                                     icon={<USDCIcon />}
                                     decimals={6}
                                     minDecimals={2}
-                                    connectWallet={connectWallet}
                                 >
                                     <TransactionsProvider>
                                         <PaymentProvider>
