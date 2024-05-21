@@ -13,7 +13,7 @@ import { PaymentProvider } from '../contexts/PaymentProvider';
 import { ThemeProvider } from '../contexts/ThemeProvider';
 import { TransactionsProvider } from '../contexts/TransactionsProvider';
 import { SolanaPayLogo } from '../images/SolanaPayLogo';
-import { USDCIcon } from '../images/EURCIcon';
+import { EURCIcon } from '../images/EURCIcon';
 import css from './App.module.css';
 
 interface AppProps extends NextAppProps {
