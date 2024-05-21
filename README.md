@@ -1,67 +1,183 @@
-# Solana Pay
+# Point of Sale
 
-Solana Pay is a standard protocol and set of reference implementations that enable developers to incorporate decentralized payments into their apps and services.
+This is an example of how you can use the `@solana/pay` JavaScript library to create a simple point of sale system.
 
-[Read the specification.](SPEC.md)
+You can [check out the app](https://app.solanapay.com?recipient=GvHeR432g7MjN9uKyX3Dzg66TqwrEWgANLnnFZXMeyyj&label=Solana+Pay), use the code as a reference, or run it yourself to start accepting decentralized payments in-person.
 
-The Solana blockchain confirms transactions in less than a second and costs on average $0.0005, providing users a seamless experience with no intermediaries.
+## Prerequisites
 
-[Read the docs to get started.](https://docs.solanapay.com)
+To build and run this app locally, you'll need:
 
-## Supporting Wallets
+-   Node.js v14.17.0 or above
+-   Yarn
+-   <details>
+        <summary> Setup two wallets on <a href="https://phantom.app">Phantom</a> (Merchant and Customer) </summary>
 
-- **Phantom** ([iOS](https://apps.apple.com/us/app/phantom-solana-wallet/id1598432977), [Android](https://play.google.com/store/apps/details?id=app.phantom&hl=en_US&gl=US))
-- **Solflare** ([iOS](https://apps.apple.com/us/app/solflare/id1580902717), [Android](https://play.google.com/store/apps/details?id=com.solflare.mobile))
-- **Glow** ([iOS](https://apps.apple.com/app/id1599584512), [Android](https://play.google.com/store/apps/details?id=com.luma.wallet.prod))
-- **Decaf Wallet** ([iOS](https://apps.apple.com/nz/app/decaf-wallet/id1616564038), [Android](https://play.google.com/store/apps/details?id=so.decaf.wallet))
-- **Espresso Cash** ([iOS](https://apps.apple.com/us/app/crypto-please/id1559625715), [Android](https://play.google.com/store/apps/details?id=com.pleasecrypto.flutter))
-- **Ottr** ([iOS](https://apps.apple.com/us/app/ottr-finance/id1628669270), [Android](https://play.google.com/store/apps/details?id=finance.ottr.android))
-- **Ultimate** ([iOS](https://apps.apple.com/us/app/ultimate-crypto-defi-wallet/id1629053410), [Android](https://play.google.com/store/apps/details?id=fi.unstoppable.ultimate.android))
-- **Tiplink** ([Web](https://tiplink.io))
+    #### 1. Create merchant wallet
 
-## How to use Solana Pay
+    Follow the [guide][1] on how to create a wallet. This wallet will provide the recipient address.
 
-### Accept payments in your web app
+    #### 2. Create customer wallet
 
-Use the [`@solana/pay` JavaScript SDK](https://github.com/solana-labs/solana-pay/tree/master/core) to start accepting payments in your app today.
+    Follow the [guide][1] on how to create another wallet. This wallet will be paying for the goods/services.
 
-### Accept payments in person
+    #### 3. Set Phantom to connect to devnet
 
-Run the open-source [Solana Pay Point of Sale app](https://github.com/solana-labs/solana-pay/tree/master/examples/point-of-sale) to start accepting payments in-person.
+    1. Click the settings icon in the Phantom window
+    2. Select the "Change network" option and select "Devnet"
 
-## Getting Involved
+    #### 4. Airdrop SOL to customer wallet
 
-Solana Pay is an open standard to facilitate commerce on Solana. We are looking for more contributors to help develop the ecosystem. Here are a few ideas if you're looking to get involved.
+    Use [solfaucet][3] to airdrop SOL to the customer wallet.
 
-### Hackathon Projects
+    > You'll need SOL in the customer wallet to pay for the goods/services + transaction fees
 
-The [Solana Grizzlython Hackathon](https://solana.com/grizzlython) is happening right now. There's a dedicated Payments track, presented by Stripe.
+ </details>
 
-Here are some [Solana Pay hackathon ideas](https://www.figma.com/community/file/1070574785723157359) to get started thinking about how you can build the future of payments.
+## Getting Started
 
-### eCommerce Platform Integrations
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
-To get as many merchants accepting payments on Solana as possible we need to provide easy ways to set up Solana Pay on all eCommerce platforms.
+### Clone the repository
 
-Solana Labs has started a reference implementation for Shopify which you can see [here](https://github.com/solana-labs/solana-pay/blob/shopify/shopify) to get a sense of how this might work.
+#### With Git
+```shell
+git clone https://github.com/solana-labs/solana-pay.git
+```
 
-Here are some of the top eCommerce platforms that we're looking to integrate to:
+#### With Github CLI
+```shell
+gh repo clone solana-labs/solana-pay
+```
 
-- WooCommerce
-- Magento
-- BigCommerce
-- Wix
-- Squarespace
+### Install dependencies
+```shell
+cd solana-pay/examples/point-of-sale
+npm install
+```
 
-### Other possible projects
+### Start the local dev server
+```shell
+npm run dev
+```
 
-- Mobile SDKs
-- Checkout UX Components
+### In a separate terminal, run a local SSL proxy
+```shell
+npm run proxy
+```
 
-Do you have another idea? Feel free to open an issue to discuss it with the community.
+### Open the point of sale app
+```shell
+open "https://localhost:3001?recipient=Your+Merchant+Address&label=Your+Store+Name"
+```
+
+You may need to accept a locally signed SSL certificate to open the page.
+
+## Accepting USDC on Mainnet
+Import the Mainnet endpoint, along with USDC's mint address and icon in the [`client/components/pages/App.tsx`](https://github.com/solana-labs/solana-pay/blob/master/examples/point-of-sale/src/client/components/pages/App.tsx) file.
+```tsx
+import { MAINNET_ENDPOINT, MAINNET_USDC_MINT } from '../../utils/constants';
+import { USDCIcon } from '../images/USDCIcon';
+```
+
+In the same file, set the `endpoint` value in the `<ConnectionProvider>` to `MAINNET_ENDPOINT` and set the following values in the `<ConfigProvider>`:
+
+```tsx
+splToken={MAINNET_USDC_MINT}
+symbol="USDC"
+icon={<USDCIcon />}
+decimals={6}
+minDecimals={2}
+```
+
+**Make sure to use 6 decimals for USDC!**
+
+When you're done, it should look like this:
+
+```tsx
+<ConnectionProvider endpoint={MAINNET_ENDPOINT}>
+    <WalletProvider wallets={wallets} autoConnect={connectWallet}>
+        <WalletModalProvider>
+            <ConfigProvider
+                baseURL={baseURL}
+                link={link}
+                recipient={recipient}
+                label={label}
+                message={message}
+                splToken={MAINNET_USDC_MINT}
+                symbol="USDC"
+                icon={<USDCIcon />}
+                decimals={6}
+                minDecimals={2}
+                connectWallet={connectWallet}
+            >
+```
+
+## Using Transaction Requests
+
+[Transaction Requests](https://github.com/solana-labs/solana-pay/blob/master/SPEC.md#specification-transaction-request) are a new feature in Solana Pay.
+
+In the [`client/components/pages/App.tsx`](https://github.com/solana-labs/solana-pay/blob/master/examples/point-of-sale/src/client/components/pages/App.tsx) file, toggle these lines:
+
+```tsx
+    // Toggle comments on these lines to use transaction requests instead of transfer requests.
+    const link = undefined;
+    // const link = useMemo(() => new URL(`${baseURL}/api/`), [baseURL]);
+```
+
+When you're done, it should look like this:
+
+```tsx
+    // Toggle comments on these lines to use transaction requests instead of transfer requests.
+    // const link = undefined;
+    const link = useMemo(() => new URL(`${baseURL}/api/`), [baseURL]);
+```
+
+The generated QR codes in the app should now use transaction requests. To see what's going on and customize it, check out the [`server/api/index.ts`](https://github.com/solana-labs/solana-pay/blob/master/examples/point-of-sale/src/server/api/index.ts) file.
+
+## Deploying to Vercel
+
+You can deploy this point of sale app to Vercel with a few clicks.
+
+### 1. Fork the project
+
+Fork the Solana Pay repository
+
+### 2. Login to Vercel
+
+Login to Vercel and create a new project
+
+![](./setup/1.New.png)
+
+Import the forked repository from GitHub.
+
+![](./setup/2.Import.png)
+
+> If you're forked repository is not listed, you'll need to adjust your GitHub app permissions. Search for the and select the `Missing Git repository? Adjust GitHub App Permissions` option.
+
+### 3. Configure project
+
+Choose `point-of-sale` as the root directory:
+
+![](./setup/3.Root_directory.png)
+
+Configure the project as follows:
+
+![](./setup/4.Configuration.png)
+
+### Deploy project
+
+Once the deployment finishes, navigate to
+
+```
+https://<YOUR DEPLOYMENT URL>?recipient=<YOUR WALLET ADDRESS>&label=Your+Store+Name
+```
 
 ## License
 
-Solana Pay is open source and available under the Apache License, Version 2.0. See the [LICENSE](./LICENSE) file for more info.
+The Solana Pay Point of Sale app is open source and available under the Apache License, Version 2.0. See the [LICENSE](./LICENSE) file for more info.
 
-![Solana Pay](solana-pay.png)
+<!-- Links -->
+
+[1]: https://help.phantom.app/hc/en-us/articles/4406388623251-How-to-create-a-new-wallet
+[3]: https://solfaucet.com/
